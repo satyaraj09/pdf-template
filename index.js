@@ -1,6 +1,8 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
+import fs from 'fs';
+import path from 'path';
 
 const width = 600;
 const height = 300;
@@ -38,6 +40,35 @@ const rightData = {
     "Humidity Accuracy:": " ± 0.1 %"
 };
 
+const dummyData = Array.from({ length: 100 }, (_, i) => {
+    const date = new Date();
+    date.setMinutes(date.getMinutes() + i * 10);
+    return {
+        sr: i + 1,
+        timestamp: date.toISOString().slice(0, 19).replace("T", " "),
+        temperature: (20 + Math.random() * 10).toFixed(2),
+        humidity: (40 + Math.random() * 20).toFixed(2),
+    };
+});
+
+const labels = dummyData.map((d) => d.timestamp);
+const tempData = dummyData.map((d) => d.temperature);
+const humidData = dummyData.map((d) => d.humidity);
+
+const tempChart = await generateChart(
+    labels,
+    tempData,
+    "Temperature (°C)",
+    "red"
+);
+
+const humidChart = await generateChart(
+    labels,
+    humidData,
+    "Humidity (%)",
+    "blue"
+);
+
 const generatePDF = async () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -45,7 +76,23 @@ const generatePDF = async () => {
     const marginRightX = pageWidth / 2;
     const marginX = 15;
     const marginY = pageHeight - 15;
-    let currentLine = 10;
+    let currentLine = 18;
+    const imagePath = path.resolve('./vega-logo.png');
+    const imageBuffer = fs.readFileSync(imagePath);
+    const imageBase64 = imageBuffer.toString('base64');
+    const imageData = `data:image/png;base64,${imageBase64}`
+
+    const headerText = (reportType) => {
+        doc.addImage(imageData, "PNG", 15, 5, 20, 10)
+        doc.setFontSize(11).setFont(undefined, "bold").setTextColor('#003366');
+        doc.text("Data Report", pageWidth / 2, 10, { align: "center" });
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(8);
+        doc.text(reportType, pageWidth / 2, 13, { align: "center" });
+
+        doc.setLineWidth(0.3);
+        doc.line(marginX, 17, pageWidth - 15, 17 );
+    }
 
     const footerText = (pageNum, totalPages) => {
         const timestamp = new Date().toLocaleString();
@@ -68,45 +115,9 @@ const generatePDF = async () => {
         });
         doc.text("Copyright © Vega™", rightX, marginY + 5, { align: "right" });
     };
-    const dummyData = Array.from({ length: 100 }, (_, i) => {
-        const date = new Date();
-        date.setMinutes(date.getMinutes() + i * 10);
-        return {
-            sr: i + 1,
-            timestamp: date.toISOString().slice(0, 19).replace("T", " "),
-            temperature: (20 + Math.random() * 10).toFixed(2),
-            humidity: (40 + Math.random() * 20).toFixed(2),
-        };
-    });
-
-    const labels = dummyData.map((d) => d.timestamp);
-    const tempData = dummyData.map((d) => d.temperature);
-    const humidData = dummyData.map((d) => d.humidity);
-
-    const tempChart = await generateChart(
-        labels,
-        tempData,
-        "Temperature (°C)",
-        "red"
-    );
-
-    const humidChart = await generateChart(
-        labels,
-        humidData,
-        "Humidity (%)",
-        "blue"
-    );
 
     // ===== Title =====
-    doc.setFontSize(14).setFont(undefined, "bold").setTextColor(60, 130, 225);
-    doc.text("Data Report", pageWidth / 2, currentLine, { align: "center" });
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    doc.text("Test", pageWidth / 2, currentLine + 5, { align: "center" });
-
-    // ===== Horizontal Line 1 =====
-    doc.setLineWidth(0.5);
-    doc.line(marginX, currentLine += 7, pageWidth - 15, currentLine);
+    headerText('Hello');
 
     // ===== Section 1 Heading =====
     doc.setFont(undefined, "bold").setFontSize(14).setTextColor(60, 130, 225);

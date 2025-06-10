@@ -159,26 +159,17 @@ const generatePDF = async () => {
       timestamp: date.toISOString().slice(0, 19).replace("T", " "),
       temperature: (20 + Math.random() * 10).toFixed(2),
       humidity: (40 + Math.random() * 20).toFixed(2),
-      probes: (40 + Math.random() * 20).toFixed(2),
     };
   });
 
   const labels = dummyData.map((d) => d.timestamp);
   const tempData = dummyData.map((d) => d.temperature);
   const humidData = dummyData.map((d) => d.humidity);
-  const probesData = dummyData.map((d) => d.probes);
 
   const tempHumidChart = await generateDualAxisChart(
     labels,
     tempData,
     humidData
-  );
-
-  const probesChart = await generateChart(
-    labels,
-    probesData,
-    "Probes",
-    "green"
   );
 
   // ===== Title =====
