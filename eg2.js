@@ -374,9 +374,9 @@ const generatePDF = async () => {
   doc.text("Temperature-Humidity", marginX, currentLine += 7);
   doc.addImage(tempHumidChart, "PNG", 15, currentLine + 5, pageWidth - 30, 60);
 
-  doc.setFont(undefined, "bold").setFontSize(16);
-  doc.text("Probes", marginX, currentLine += 77);
-  doc.addImage(probesChart, "PNG", 15, currentLine + 5, pageWidth - 30, 60);
+  // doc.setFont(undefined, "bold").setFontSize(16);
+  // doc.text("Probes", marginX, currentLine += 77);
+  // doc.addImage(probesChart, "PNG", 15, currentLine + 5, pageWidth - 30, 60);
 
   footerText(1, Math.ceil(dummyData.length / 20) + 1);
 

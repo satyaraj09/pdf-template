@@ -21,6 +21,24 @@ const generateChart = async (labels, data, label, color) => {
                 fill: false,
             }]
         },
+        options: {
+            scales: {
+                x: {
+                    ticks: {
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: {
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
     }
     return await chartJSNodeCanvas.renderToDataURL(config);
 };
@@ -91,7 +109,7 @@ const generatePDF = async () => {
         doc.text(reportType, pageWidth / 2, 13, { align: "center" });
 
         doc.setLineWidth(0.3);
-        doc.line(marginX, 17, pageWidth - 15, 17 );
+        doc.line(marginX, 17, pageWidth - 15, 17);
     }
 
     const footerText = (pageNum, totalPages) => {
@@ -328,8 +346,9 @@ const generatePDF = async () => {
 
     chunked.forEach((data, index) => {
         doc.addPage();
+
         // ===== Title =====
-        doc.setFontSize(14).setFont(undefined, "bold").setTextColor(60, 130, 225);
+        doc.setFontSize(14).setFont(undefined, "bold").setTextColor('#003366');
         doc.text("Data Report", pageWidth / 2, 15, { align: "center" });
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
@@ -344,7 +363,7 @@ const generatePDF = async () => {
                 halign: "center",
                 valign: "middle",
                 lineColor: [0, 0, 0],
-                fillColor: [60, 130, 225],
+                fillColor: ["#003366"],
                 lineWidth: 0.2,
             },
             bodyStyles: {
@@ -354,6 +373,12 @@ const generatePDF = async () => {
                 lineWidth: 0.2,
                 fontSize: 8,
                 cellPadding: 1.2,
+            },
+            columnStyles: {
+                0: { cellWidth: 20 },
+                1: { cellWidth: "wrap" },
+                2: { cellWidth: "wrap" },
+                3: { cellWidth: "wrap" },
             },
             head: [["Sr. No.", "Timestamp", "Temperature (°C)", "Humidity (%)"]],
             body: data.map((row) => [

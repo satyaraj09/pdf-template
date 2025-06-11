@@ -284,7 +284,6 @@ const generatePDF = async () => {
   doc.setFont(undefined, "normal");
   doc.text(maxHumValue, xAfterMinHumValue + maxHumLabelWidth + 2, yStart);
 
-
   // ===== Horizontal Line 3 =====
   doc.setLineWidth(0.3);
   doc.line(marginX, currentLine += 5, pageWidth - 10, currentLine);
